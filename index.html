@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{{YOUR_NAME}} — Portfolio</title>
+  <meta name="description" content="Portfolio de {{YOUR_NAME}} — projets, expériences et contact." />
+  <meta property="og:title" content="{{YOUR_NAME}} — Portfolio" />
+  <meta property="og:description" content="Projets, expériences et contact." />
+  <meta name="theme-color" content="#6d28d9" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    // Année dynamique
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Smooth scroll
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', e => {
+        const id = a.getAttribute('href');
+        if (id.length > 1) { e.preventDefault(); document.querySelector(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+      });
+    });
+
+    // ===== Sélecteur de thème =====
+    const THEME_KEY = 'site-theme';
+    const themeBtn = document.getElementById('themeBtn');
+    const themePanel = document.getElementById('themePanel');
+    const THEME_CLASSES = ['theme-blue','theme-emerald','theme-amber','theme-rose'];
+
+    function applyTheme(theme){
+      document.documentElement.classList.remove(...THEME_CLASSES);
+      if(theme && theme !== 'theme-default') document.documentElement.classList.add(theme);
+      localStorage.setItem(THEME_KEY, theme || 'theme-default');
+    }
+
+    // init à l'ouverture
+    applyTheme(localStorage.getItem(THEME_KEY));
+
+    // ouverture/fermeture du panneau
+    themeBtn.addEventListener('click', () => {
+      const open = themePanel.classList.toggle('hidden');
+      themeBtn.setAttribute('aria-expanded', String(!open));
+    });
+    document.addEventListener('click', (e) => {
+      if(!themePanel.contains(e.target) && !themeBtn.contains(e.target)) themePanel.classList.add('hidden');
+    });
+
+    // clic sur une couleur
+    themePanel.querySelectorAll('.theme-dot').forEach(btn => {
+      btn.addEventListener('click', () => { applyTheme(btn.dataset.theme); themePanel.classList.add('hidden'); });
+    });
+  </script>
+  <style>
+    :root {
+      --p-50:#f5f3ff; --p-100:#ede9fe; --p-600:#7c3aed; --p-700:#6d28d9; --p-800:#5b21b6; --p-900:#4c1d95;
+      --g1: rgba(139,92,246,.55); --g2: rgba(236,72,153,.45); --g3: rgba(99,102,241,.55);
+    }
+    /* Thèmes (ajoutés sur <html>) */
+    .theme-blue   { --p-50:#eff6ff; --p-100:#dbeafe; --p-600:#2563eb; --p-700:#1d4ed8; --p-800:#1e40af; --p-900:#1e3a8a; --g1: rgba(37,99,235,.50); --g2: rgba(14,165,233,.45); --g3: rgba(59,130,246,.55); }
+    .theme-emerald{ --p-50:#ecfdf5; --p-100:#d1fae5; --p-600:#059669; --p-700:#047857; --p-800:#065f46; --p-900:#064e3b; --g1: rgba(5,150,105,.50); --g2: rgba(16,185,129,.45); --g3: rgba(34,197,94,.55); }
+    .theme-amber  { --p-50:#fffbeb; --p-100:#fef3c7; --p-600:#d97706; --p-700:#b45309; --p-800:#92400e; --p-900:#78350f; --g1: rgba(217,119,6,.50); --g2: rgba(245,158,11,.45); --g3: rgba(251,191,36,.55); }
+    .theme-rose   { --p-50:#fff1f2; --p-100:#ffe4e6; --p-600:#e11d48; --p-700:#be123c; --p-800:#9f1239; --p-900:#881337; --g1: rgba(225,29,72,.50); --g2: rgba(244,63,94,.45); --g3: rgba(244,114,182,.55); }
+
+    /* Remap des utilitaires Tailwind "primary" vers des variables CSS pour permettre le changement de thème */
+    .bg-primary-600{ background-color: var(--p-600) !important; }
+    .bg-primary-700{ background-color: var(--p-700) !important; }
+    .bg-primary-100{ background-color: var(--p-100) !important; }
+    .text-primary-700{ color: var(--p-700) !important; }
+    .text-primary-800{ color: var(--p-800) !important; }
+    .hover\:bg-primary-800:hover{ background-color: var(--p-800) !important; }
+    .hover\:bg-primary-50:hover{ background-color: var(--p-50) !important; }
+    .from-primary-700{
+      --tw-gradient-from: var(--p-700) var(--tw-gradient-from-position);
+      --tw-gradient-to: rgb(255 255 255 / 0) var(--tw-gradient-to-position);
+      --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+    }
+
+    /* Dégradés et bulles décoratives */
+    .gradient-blob {
+      position: absolute; inset: -10rem -10rem auto -10rem;
+      height: 28rem; filter: blur(60px); opacity: .45;
+      background: radial-gradient(50% 60% at 20% 40%, var(--g1), transparent 70%),
+                  radial-gradient(45% 55% at 70% 30%, var(--g2), transparent 70%),
+                  radial-gradient(50% 55% at 40% 80%, var(--g3), transparent 70%);
+      pointer-events: none; z-index: 0;
+    }
+    .card-hover { transition: transform .25s ease, box-shadow .25s ease; }
+    .card-hover:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(0,0,0,.12); }
+
+    /* Style du sélecteur de thème */
+    .theme-dot{ width:20px; height:20px; border-radius:9999px; border:1px solid rgba(0,0,0,.1); display:inline-block; }
+      /* Hero gradient plein écran pour l'arrière-plan */
+    .hero-gradient{position:absolute;inset:-20rem -20rem -10rem -20rem;filter:blur(80px);opacity:.5;background:
+      radial-gradient(60% 60% at 10% 10%, var(--g1), transparent 60%),
+      radial-gradient(50% 50% at 90% 20%, var(--g2), transparent 60%),
+      radial-gradient(50% 50% at 70% 90%, var(--g3), transparent 60%);
+      pointer-events:none; z-index:0;}
+      /* Fond dégradé sur TOUTE la page */
+    .page-gradient{position:fixed;inset:-28rem;filter:blur(120px);opacity:.5;background:
+      radial-gradient(60% 60% at 10% 10%, var(--g1), transparent 60%),
+      radial-gradient(55% 55% at 90% 20%, var(--g2), transparent 60%),
+      radial-gradient(55% 55% at 70% 90%, var(--g3), transparent 60%);
+      pointer-events:none;z-index:-1}
+
+    /* Segmented tabs au centre du header */
+    .segmented{display:inline-flex;gap:0.25rem;padding:0.25rem;border-radius:9999px;border:1px solid rgba(0,0,0,.08);background:rgba(255,255,255,.6);backdrop-filter:blur(8px);box-shadow:0 10px 30px rgba(0,0,0,.06)}
+    .segmented a{border-radius:9999px;padding:.5rem 1rem;line-height:1.25rem}
+    .segmented a.active{background:var(--p-100);color:var(--p-800)}
+  </style>
+</head>
+<body class="bg-transparent text-slate-900 antialiased">
+  <div class="page-gradient"></div>
+  <!-- ====== Header ====== -->
+  <header class="relative">
+    <div class="gradient-blob"></div>
+    <nav class="relative z-10 mx-auto grid max-w-6xl grid-cols-3 items-center px-4 py-5">
+      <!-- Left: Brand -->
+      <div class="flex items-center">
+        <a href="#home" class="flex items-center gap-2 font-semibold tracking-tight">
+          <span class="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-primary-600 text-white shadow-soft">{{INITS}}</span>
+          <span class="hidden sm:block">{{YOUR_NAME}}</span>
+        </a>
+      </div>
+
+      <!-- Center: Main nav (Home · Work · About) -->
+      <div class="flex justify-center">
+        <nav class="segmented text-sm font-medium">
+          <a href="#home" class="active" data-tab="home">Home</a>
+          <a href="#work" data-tab="work">Work</a>
+          <a href="#about" data-tab="about">About</a>
+        </nav>
+      </div>
+
+      <!-- Right: Actions (CV + Theme switcher) -->
+      <div class="ml-auto flex items-center justify-end gap-2">
+        <a href="assets/CV.pdf" class="hidden rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-soft hover:bg-slate-800 sm:inline-block">Télécharger le CV</a>
+        <div class="relative">
+          <button id="themeBtn" class="rounded-full p-2 hover:bg-primary-50" aria-haspopup="true" aria-expanded="false" title="Changer la couleur du site">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v3"/><path d="M12 18v3"/><path d="M3 12h3"/><path d="M18 12h3"/><path d="M19.8 19.8l-2.1-2.1"/><path d="M6.3 6.3 4.2 4.2"/><circle cx="12" cy="12" r="5"/></svg>
+          </button>
+          <div id="themePanel" class="absolute right-0 top-10 z-20 hidden w-48 rounded-xl border border-slate-200 bg-white p-3 shadow-soft">
+            <div class="mb-2 text-xs font-semibold text-slate-500">Couleur</div>
+            <div class="flex items-center gap-2">
+              <button class="theme-dot" data-theme="theme-default" style="background:#6d28d9" title="Violet"></button>
+              <button class="theme-dot" data-theme="theme-blue" style="background:#1d4ed8" title="Bleu"></button>
+              <button class="theme-dot" data-theme="theme-emerald" style="background:#047857" title="Vert"></button>
+              <button class="theme-dot" data-theme="theme-amber" style="background:#b45309" title="Ambre"></button>
+              <button class="theme-dot" data-theme="theme-rose" style="background:#be123c" title="Rose"></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <!-- ====== Hero ====== -->
+  <section id="home" class="relative overflow-hidden">
+    <div class="hero-gradient"></div>
+    <div class="mx-auto grid max-w-6xl grid-cols-1 items-center gap-10 px-4 pb-12 pt-4 md:grid-cols-2 md:pb-16 lg:pb-20">
+      <div class="relative z-10">
+        <p class="mb-3 text-sm font-semibold uppercase tracking-wider text-primary-700">{{YOUR_TAGLINE}}</p>
+        <h1 class="text-4xl font-extrabold leading-tight tracking-tight sm:text-5xl">Bonjour, je suis <span class="text-transparent bg-gradient-to-r from-primary-700 via-fuchsia-600 to-indigo-600 bg-clip-text">{{YOUR_NAME}}</span></h1>
+        <p class="mt-4 max-w-xl text-slate-600">Pitch court (2–3 lignes) sur ton profil et tes atouts principaux. Pense « qui tu es, ce que tu fais, et ta proposition de valeur ».</p>
+        <div class="mt-6 flex flex-wrap gap-3">
+          <span class="rounded-full bg-primary-100 px-3 py-1 text-xs font-semibold text-primary-800">{{TAG_1}}</span>
+          <span class="rounded-full bg-primary-100 px-3 py-1 text-xs font-semibold text-primary-800">{{TAG_2}}</span>
+          <span class="rounded-full bg-primary-100 px-3 py-1 text-xs font-semibold text-primary-800">{{TAG_3}}</span>
+          <span class="rounded-full bg-primary-100 px-3 py-1 text-xs font-semibold text-primary-800">{{TAG_4}}</span>
+        </div>
+        <div class="mt-8 flex items-center gap-3">
+          <a href="#work" class="inline-flex items-center gap-2 rounded-full bg-primary-700 px-5 py-3 text-sm font-semibold text-white shadow-soft hover:bg-primary-800">
+            Voir mes projets
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </a>
+          <a href="https://github.com/{{YOUR_GITHUB_USERNAME}}" target="_blank" class="rounded-full px-5 py-3 text-sm font-semibold hover:bg-primary-50">GitHub</a>
+          <a href="https://www.linkedin.com/in/{{YOUR_LINKEDIN_HANDLE}}/" target="_blank" class="rounded-full px-5 py-3 text-sm font-semibold hover:bg-primary-50">LinkedIn</a>
+        </div>
+      </div>
+      <div class="relative z-10 mx-auto flex justify-center md:justify-end">
+        <!-- Remplacez src par votre photo dans /assets/profile.jpg -->
+        <img src="assets/profile.jpg" alt="Photo de profil" class="h-72 w-72 rounded-3xl object-cover shadow-2xl md:h-96 md:w-96" onerror="this.onerror=null;this.src='https://via.placeholder.com/384x384?text=Profile';" />
+      </div>
+    </div>
+
+    <!-- 3 atouts -->
+    <div class="mx-auto max-w-6xl px-4 pb-12 md:pb-16">
+      <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
+        <div class="card-hover rounded-2xl border border-slate-200 bg-white p-6 shadow-soft">
+          <div class="mb-3 text-2xl font-semibold">{{VALUE_PROP_1}}</div>
+          <p class="text-sm text-slate-600">Description (1–2 phrases) : quel bénéfice concret tu apportes ?</p>
+        </div>
+        <div class="card-hover rounded-2xl border border-slate-200 bg-white p-6 shadow-soft">
+          <div class="mb-3 text-2xl font-semibold">{{VALUE_PROP_2}}</div>
+          <p class="text-sm text-slate-600">Description (1–2 phrases).</p>
+        </div>
+        <div class="card-hover rounded-2xl border border-slate-200 bg-white p-6 shadow-soft">
+          <div class="mb-3 text-2xl font-semibold">{{VALUE_PROP_3}}</div>
+          <p class="text-sm text-slate-600">Description (1–2 phrases).</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== Work ====== -->
+  <section id="work" class="relative border-t border-slate-100 bg-gradient-to-b from-white to-slate-50/60 py-12 md:py-16">
+    <div class="mx-auto max-w-6xl px-4">
+      <div class="mb-6 flex items-end justify-between gap-4">
+        <div>
+          <h2 class="text-3xl font-extrabold tracking-tight sm:text-4xl">Selected Work</h2>
+          <p class="mt-2 max-w-2xl text-sm text-slate-600">Une sélection de projets (tableaux de bord, modèles et analyses) réalisés en cours et en entreprise.</p>
+        </div>
+        <a href="#all-work" class="inline-flex items-center gap-2 rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-soft hover:bg-slate-800">Tout voir
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </a>
+      </div>
+
+      <!-- PROJECTS -->
+      <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+        <a href="{{PROJECT_1_URL}}" class="card-hover group rounded-2xl border border-slate-200 bg-white p-6 shadow-soft">
+          <div class="w-full text-left">
+            <div class="mb-4 text-sm font-semibold text-slate-500">{{PROJECT_1_CATEGORY}}</div>
+            <h3 class="mb-4 text-2xl font-bold">{{PROJECT_1_TITLE}}</h3>
+            <img src="assets/project1.jpg" alt="Aperçu projet 1" class="h-28 w-full rounded-xl object-cover" onerror="this.onerror=null;this.src='https://via.placeholder.com/640x180?text=Project+1';" />
+          </div>
+        </a>
+        <a href="{{PROJECT_2_URL}}" class="card-hover group rounded-2xl border border-slate-200 bg-white p-6 shadow-soft">
+          <div class="w-full text-left">
+            <div class="mb-4 text-sm font-semibold text-slate-500">{{PROJECT_2_CATEGORY}}</div>
+            <h3 class="mb-4 text-2xl font-bold">{{PROJECT_2_TITLE}}</h3>
+            <img src="assets/project2.jpg" alt="Aperçu projet 2" class="h-28 w-full rounded-xl object-cover" onerror="this.onerror=null;this.src='https://via.placeholder.com/640x180?text=Project+2';" />
+          </div>
+        </a>
+        <a href="{{PROJECT_3_URL}}" class="card-hover group rounded-2xl border border-slate-200 bg-white p-6 shadow-soft">
+          <div class="w-full text-left">
+            <div class="mb-4 text-sm font-semibold text-slate-500">{{PROJECT_3_CATEGORY}}</div>
+            <h3 class="mb-4 text-2xl font-bold">{{PROJECT_3_TITLE}}</h3>
+            <img src="assets/project3.jpg" alt="Aperçu projet 3" class="h-28 w-full rounded-xl object-cover" onerror="this.onerror=null;this.src='https://via.placeholder.com/640x180?text=Project+3';" />
+          </div>
+        </a>
+        <a href="{{PROJECT_4_URL}}" class="card-hover group rounded-2xl border border-slate-200 bg-white p-6 shadow-soft">
+          <div class="w-full text-left">
+            <div class="mb-4 text-sm font-semibold text-slate-500">{{PROJECT_4_CATEGORY}}</div>
+            <h3 class="mb-4 text-2xl font-bold">{{PROJECT_4_TITLE}}</h3>
+            <img src="assets/project4.jpg" alt="Aperçu projet 4" class="h-28 w-full rounded-xl object-cover" onerror="this.onerror=null;this.src='https://via.placeholder.com/640x180?text=Project+4';" />
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== About ====== -->
+  <section id="about" class="relative py-12 md:py-16">
+    <div class="mx-auto grid max-w-6xl grid-cols-1 items-start gap-10 px-4 md:grid-cols-2">
+      <div>
+        <h2 class="text-3xl font-extrabold tracking-tight sm:text-4xl">À propos</h2>
+        <p class="mt-4 text-slate-600">Paragraphe « À propos » (3–5 lignes) : parcours, spécialités, ce que tu cherches (stage/alternance/CDI).</p>
+        <ul class="mt-6 grid grid-cols-2 gap-3 text-sm">
+          <li class="rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-soft">{{SKILL_1}}</li>
+          <li class="rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-soft">{{SKILL_2}}</li>
+          <li class="rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-soft">{{SKILL_3}}</li>
+          <li class="rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-soft">{{SKILL_4}}</li>
+        </ul>
+      </div>
+      <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-soft">
+        <h3 class="mb-4 text-xl font-bold">Expériences récentes</h3>
+        <ul class="space-y-4 text-sm">
+          <li>
+            <div class="font-semibold">{{EXPERIENCE_1_COMPANY}} — {{EXPERIENCE_1_ROLE}}</div>
+            <div class="text-slate-500">{{EXPERIENCE_1_DATES}} • {{EXPERIENCE_1_BULLET}}</div>
+          </li>
+          <li>
+            <div class="font-semibold">{{EXPERIENCE_2_COMPANY}} — {{EXPERIENCE_2_ROLE}}</div>
+            <div class="text-slate-500">{{EXPERIENCE_2_DATES}} • {{EXPERIENCE_2_BULLET}}</div>
+          </li>
+          <li>
+            <div class="font-semibold">{{EXPERIENCE_3_COMPANY}} — {{EXPERIENCE_3_ROLE}}</div>
+            <div class="text-slate-500">{{EXPERIENCE_3_DATES}} • {{EXPERIENCE_3_BULLET}}</div>
+          </li>
+        </ul>
+        <a href="assets/CV.pdf" class="mt-6 inline-flex rounded-full bg-primary-700 px-4 py-2 text-sm font-semibold text-white shadow-soft hover:bg-primary-800">Voir mon CV</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== Contact ====== -->
+  <section id="contact" class="relative border-t border-slate-100 bg-white py-12 md:py-16">
+    <div class="mx-auto max-w-3xl px-4 text-center">
+      <h2 class="text-3xl font-extrabold tracking-tight sm:text-4xl">On travaille ensemble ?</h2>
+      <p class="mt-3 text-slate-600">Message d'accroche (1 phrase) pour inviter au contact : disponibilités, type d'opportunités, etc.</p>
+      <div class="mt-6 flex items-center justify-center gap-3">
+        <a href="mailto:you@example.com" class="inline-flex items-center gap-2 rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white shadow-soft hover:bg-slate-800">you@example.com
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12H2"/><path d="m12 5 7 7-7 7"/></svg>
+        </a>
+        <a href="https://www.linkedin.com/in/{{YOUR_LINKEDIN_HANDLE}}/" target="_blank" class="rounded-full px-5 py-3 text-sm font-semibold hover:bg-primary-50">LinkedIn</a>
+        <a href="https://github.com/{{YOUR_GITHUB_USERNAME}}" target="_blank" class="rounded-full px-5 py-3 text-sm font-semibold hover:bg-primary-50">GitHub</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== Footer ====== -->
+  <footer class="border-t border-slate-100 bg-white py-8">
+    <div class="mx-auto flex max-w-6xl items-center justify-between px-4 text-sm text-slate-500">
+      <p>© <span id="year"></span> {{YOUR_NAME}}. Tous droits réservés.</p>
+      <div class="flex items-center gap-4">
+        <a href="#home" class="hover:text-slate-700">Haut de page</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', e => {
+        const id = a.getAttribute('href');
+        if (id.length > 1) { e.preventDefault(); document.querySelector(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+      });
+    });
+
+    // Tabs actifs
+    const tabs = document.querySelectorAll('.segmented a[data-tab]');
+    function setActive(id){ tabs.forEach(t => t.classList.toggle('active', t.dataset.tab === id)); }
+    tabs.forEach(t => t.addEventListener('click', () => setActive(t.dataset.tab)));
+    window.addEventListener('hashchange', () => { const id = (location.hash || '#home').slice(1); setActive(id); });
+    setActive((location.hash || '#home').slice(1));
+  </script>
+</body>
+</html>
+est 
